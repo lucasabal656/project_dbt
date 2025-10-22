@@ -1,7 +1,7 @@
-name: 'project_dbt'
+name: 'dbt_labal_pro'
 version: '1.0'
 config-version: 2
-profile: LUCASABAL
+profile: 'LUCASABAL'
 
 model-paths: ["models"]
 analysis-paths: ["analyses"]
@@ -14,7 +14,7 @@ clean-targets:
   - "dbt_packages"
 
 models:
-  project_dbt:
+  dbt_labal_pro:
     staging:
       +schema: PL_STAGING
       +materialized: table

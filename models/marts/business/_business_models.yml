@@ -71,6 +71,8 @@ models:
 
   - name: fct_partsupp
     description: "Tabla de hechos que relaciona partes y proveedores con sus costes y disponibilidad"
+    config:
+      tags: ["business"]
     columns:
       - name: partsupp_sk
         description: "Clave sustituta de la tabla de hechos"

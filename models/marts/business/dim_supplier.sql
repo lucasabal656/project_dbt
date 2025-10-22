@@ -1,8 +1,3 @@
-{{ config(
-    materialized='table',
-    tags=['business']
-) }}
-
 with supplier as (
     
     select
