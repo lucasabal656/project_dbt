@@ -1,0 +1,23 @@
+version: 2
+  
+models:
+  - name: int_location
+    description: "Modelo intermedio que combina información de naciones y regiones"
+    config:
+      tags: ["intermediate", "location"]
+    columns:
+      - name: nation_id
+        description: "Identificador de la nación"
+        tests:
+          - not_null
+          - unique
+
+  - name: int_orders
+    description: "Modelo intermedio que combina órdenes con clientes y proveedores"
+    config:
+      tags: ["intermediate", "i_orders"]
+    columns:
+      - name: order_id
+        description: "Identificador único de la orden"
+        tests:
+          - not_null

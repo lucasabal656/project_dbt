@@ -1,7 +1,7 @@
 name: 'final_project'
 version: '1.0'
 config-version: 2
-profile: 'sergiodelgadosdg'
+profile: LUCASABAL
 
 model-paths: ["models"]
 analysis-paths: ["analyses"]
@@ -18,13 +18,18 @@ models:
     staging:
       +schema: PL_STAGING
       +materialized: table
+      +tags: ["staging"]
 
-    intermediate:
-      +schema: PL_TRANSFORMATION
-      +materialized: view
+    marts:
+      intermediate:
+        +schema: PL_INTERMEDIATE
+        +materialized: view
+        +tags: ["intermediate"]
 
-    business:
-      +schema: PL_BUSINESS
-      +materialized: view
+      business:
+        +schema: PL_BUSINESS
+        +materialized: table
+        +tags: ["business"]
+
 flags:
   require_generic_test_arguments_property: true

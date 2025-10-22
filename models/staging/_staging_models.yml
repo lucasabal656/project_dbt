@@ -1,0 +1,211 @@
+version: 2
+
+models:
+  - name: stg_customer
+    description: "Datos de clientes, staging"
+    config:
+      tags: ["staging", "customer"]
+    columns:
+      - name: customer_id
+        tests:
+          - not_null
+          - unique
+      - name: nation_id
+        tests:
+          - relationships:
+              arguments:
+                field: nation_id
+                to: ref('stg_nation')
+      - name: mkt_segment
+        tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - Automobile
+                  - Building
+                  - Machinery
+                  - Household
+                  - Furniture
+
+  - name: stg_orders
+    description: "Datos de órdenes, staging"
+    config:
+      tags: ["staging", "orders"]
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+          - unique
+      - name: customer_id
+        tests:
+          - relationships:
+              arguments:
+                field: customer_id
+                to: ref('stg_customer')
+      - name: order_status
+        tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - P
+                  - F
+                  - O
+      - name: order_date
+        tests:
+          - not_null
+          - date_after_1992
+      - name: total_price
+        tests:
+          - positive_value
+
+  - name: stg_lineitem
+    description: "Datos de line items, staging"
+    config:
+      tags: ["staging", "lineitem"]
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                field: order_id
+                to: ref('stg_orders')
+      - name: part_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                field: part_id
+                to: ref('stg_part')
+      - name: supplier_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                field: supplier_id
+                to: ref('stg_supplier')
+      - name: line_number
+        tests:
+          - not_null
+      - name: quantity
+        tests:
+          - positive_value
+      - name: return_flag
+        tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - R
+                  - N
+                  - A
+      - name: line_status
+        tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - F
+                  - O
+      - name: extended_price
+        tests:
+          - positive_value
+      - name: discount
+        tests:
+          - positive_value
+      - name: tax
+        tests:
+          - positive_value
+      - name: ship_date
+        tests:
+          - date_after_1992
+      - name: commit_date
+        tests:
+          - date_after_1992
+      - name: receipt_date
+        tests:
+          - date_after_1992
+
+  - name: stg_part
+    description: "Datos de partes, staging"
+    config:
+      tags: ["staging", "part"]
+    columns:
+      - name: part_id
+        tests:
+          - not_null
+          - unique
+      - name: size
+        tests:
+          - positive_value
+      - name: retail_price
+        tests:
+          - positive_value
+
+  - name: stg_supplier
+    description: "Datos de proveedores, staging"
+    config:
+      tags: ["staging", "supplier"]
+    columns:
+      - name: supplier_id
+        tests:
+          - not_null
+          - unique
+      - name: name
+      - name: nation_id
+        tests:
+          - relationships:
+              arguments:
+                field: nation_id
+                to: ref('stg_nation')
+
+  - name: stg_partsupp
+    description: "Datos de partsupp, staging"
+    config:
+      tags: ["staging", "partsupp"]
+    columns:
+      - name: part_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                field: part_id
+                to: ref('stg_part')
+      - name: supplier_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                field: supplier_id
+                to: ref('stg_supplier')
+      - name: availability
+        tests:
+          - positive_value
+      - name: supply_cost
+        tests:
+          - positive_value
+
+  - name: stg_nation
+    description: "Datos de naciones, staging"
+    config:
+      tags: ["staging", "nation"]
+    columns:
+      - name: nation_id
+        tests:
+          - not_null
+          - unique
+      - name: region_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                field: region_id
+                to: ref('stg_region')
+
+  - name: stg_region
+    description: "Datos de regiones, staging"
+    config:
+      tags: ["staging", "region"]
+    columns:
+      - name: region_id
+        tests:
+          - not_null
+          - unique
