@@ -1,19 +1,27 @@
 version: 2
 
 models:
+
   - name: fct_orders
-    description: "Tabla de hechos que combina pedidos y líneas de pedido con sus dimensiones"
+    description: >
+      Tabla de hechos principal que combina información de pedidos y líneas de pedido 
+      con sus dimensiones asociadas (cliente, proveedor, pieza, fecha, etc.).
+      Contiene los datos transaccionales necesarios para el análisis de ventas, 
+      márgenes, descuentos, impuestos y logística.
     config:
       tags: ["business", "f_orders"]
+
     columns:
       - name: orders_sk
-        description: "Clave sustituta de la tabla de hechos"
+        description: "Clave sustituta única de la tabla de hechos `fct_orders`."
         tests:
           - unique
           - not_null
 
       - name: customer_sk
-        description: "Clave sustituta del cliente"
+        description: >
+          Clave sustituta del cliente que enlaza con la dimensión `dim_customer`. 
+          Permite analizar las ventas y pedidos por cliente o región.
         tests:
           - not_null
           - relationships:
@@ -22,7 +30,9 @@ models:
                 field: customer_sk
 
       - name: supplier_sk
-        description: "Clave sustituta del proveedor"
+        description: >
+          Clave sustituta del proveedor asociada al producto o pieza enviada. 
+          Permite analizar la contribución de cada proveedor a las ventas.
         tests:
           - not_null
           - relationships:
@@ -31,7 +41,9 @@ models:
                 field: supplier_sk
 
       - name: part_sk
-        description: "Clave sustituta de la pieza"
+        description: >
+          Clave sustituta de la pieza o producto vendido. 
+          Permite analizar métricas por tipo de producto o categoría.
         tests:
           - not_null
           - relationships:
@@ -39,59 +51,199 @@ models:
                 to: ref('dim_part')
                 field: part_sk
 
+      - name: order_date
+        description: "Fecha en la que se realizó el pedido."
+
+      - name: quantity
+        description: "Cantidad de productos pedida en cada línea de pedido."
+
+      - name: extended_price
+        description: "Precio total de la línea de pedido antes de aplicar descuentos."
+
+      - name: discount
+        description: "Descuento aplicado a la línea de pedido, expresado como porcentaje decimal."
+
+      - name: tax
+        description: "Impuesto aplicado a la línea de pedido, expresado como porcentaje decimal."
+
+      - name: return_flag
+        description: "Indicador de devolución del pedido ('R' si el pedido fue devuelto)."
+
+      - name: line_status
+        description: "Estado actual de la línea del pedido (entregado, pendiente, etc.)."
+
+      - name: ship_date
+        description: "Fecha en la que el pedido fue enviado."
+
+      - name: commit_date
+        description: "Fecha comprometida de entrega al cliente."
+
+      - name: receipt_date
+        description: "Fecha en la que el cliente recibió la mercancía."
+
+      - name: order_priority
+        description: "Prioridad del pedido (numérica o categórica)."
+
+      - name: clerk_id
+        description: "Identificador del empleado (clerk) responsable del pedido."
+
+      - name: supply_cost
+        description: "Coste de suministro de la pieza según el proveedor."
+
+
   - name: dim_date
+    description: >
+      Dimensión de fechas que contiene una fila por cada día del calendario.
+      Se utiliza para analizar la evolución temporal de las métricas de negocio 
+      (ventas, entregas, devoluciones, etc.).
     config:
       tags: ["business", "date"]
+
     columns:
       - name: date_id
+        description: "Identificador único de la fecha en formato numérico o ISO (clave primaria)."
         tests:
           - unique
           - not_null
+
+      - name: full_date
+        description: "Fecha completa en formato YYYY-MM-DD."
+
+      - name: year
+        description: "Año de la fecha."
+
+      - name: month
+        description: "Mes de la fecha (numérico)."
+
+      - name: month_name
+        description: "Nombre del mes (por ejemplo, 'Enero')."
+
+      - name: quarter
+        description: "Trimestre del año (1 a 4)."
+
+      - name: day_of_week
+        description: "Número del día de la semana (1=Lunes, 7=Domingo)."
+
 
   - name: dim_location
+    description: >
+      Dimensión geográfica que combina la información de naciones y regiones. 
+      Permite analizar métricas de negocio por ubicación, región o país.
+    config:
+      tags: ["business", "location"]
+
     columns:
       - name: nation_sk
+        description: "Clave sustituta única de la dimensión de localización (nación)."
         tests:
           - unique
           - not_null
+
+      - name: nation_name
+        description: "Nombre de la nación normalizado (capitalizado)."
+        tests:
+          - not_null
+
+      - name: region_name
+        description: "Nombre de la región asociada a la nación."
+        tests:
+          - not_null
+
 
   - name: dim_part
+    description: >
+      Dimensión de productos o piezas. 
+      Contiene la información de catálogo necesaria para el análisis de ventas y costes 
+      por producto, tipo, marca o tamaño.
+    config:
+      tags: ["business", "part"]
+
     columns:
       - name: part_sk
+        description: "Clave sustituta única de la dimensión de partes."
         tests:
           - unique
           - not_null
+
+      - name: part_name
+        description: "Nombre descriptivo de la pieza o producto."
+
+      - name: part_type
+        description: "Tipo o categoría de la pieza."
+
+      - name: part_size
+        description: "Tamaño o especificación de la pieza."
+
+      - name: manufacturer
+        description: "Fabricante de la pieza."
+
 
   - name: dim_supplier
+    description: >
+      Dimensión de proveedores. 
+      Contiene la información de identificación y ubicación de cada proveedor, 
+      así como datos necesarios para el análisis de costes y rendimiento.
+    config:
+      tags: ["business", "supplier"]
+
     columns:
       - name: supplier_sk
+        description: "Clave sustituta única de la dimensión de proveedores."
         tests:
           - unique
           - not_null
 
+      - name: supplier_name
+        description: "Nombre del proveedor."
+
+      - name: nation_sk
+        description: "Clave de la localización asociada al proveedor."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_location')
+                field: nation_sk
+
+      - name: account_balance
+        description: "Saldo de cuenta o balance financiero del proveedor."
+
+
   - name: fct_partsupp
-    description: "Tabla de hechos que relaciona partes y proveedores con sus costes y disponibilidad"
+    description: >
+      Tabla de hechos que relaciona piezas y proveedores, 
+      incluyendo su coste de suministro y disponibilidad.
+      Sirve como base para el análisis de márgenes, optimización de inventarios 
+      y evaluación de proveedores.
     config:
       tags: ["business"]
+
     columns:
       - name: partsupp_sk
-        description: "Clave sustituta de la tabla de hechos"
+        description: "Clave sustituta única de la tabla de hechos `fct_partsupp`."
         tests:
           - unique
           - not_null
 
       - name: part_sk
-        description: "Clave sustituta de la dimensión de partes"
+        description: "Clave sustituta que enlaza con la dimensión `dim_part`."
         tests:
           - not_null
           - relationships:
-              to: ref('dim_part')
-              field: part_sk
+              arguments:
+                to: ref('dim_part')
+                field: part_sk
 
       - name: supplier_sk
-        description: "Clave sustituta de la dimensión de proveedores"
+        description: "Clave sustituta que enlaza con la dimensión `dim_supplier`."
         tests:
           - not_null
           - relationships:
-              to: ref('dim_supplier')
-              field: supplier_sk
+              arguments:
+                to: ref('dim_supplier')
+                field: supplier_sk
+
+      - name: supply_cost
+        description: "Coste de suministro de la pieza por parte del proveedor."
+
+      - name: availability
+        description: "Cantidad disponible o nivel de stock de la pieza en el proveedor."

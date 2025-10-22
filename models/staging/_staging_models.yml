@@ -1,22 +1,32 @@
 version: 2
 
 models:
+
   - name: stg_customer
-    description: "Datos de clientes, staging"
+    description: >
+      Tabla staging de clientes. Contiene los datos limpios y transformados de la fuente bruta
+      de clientes, que luego alimentan la dimensión `dim_customer`. Incluye identificadores,
+      segmentación de mercado y vínculo geográfico con la tabla de naciones.
     config:
       tags: ["staging", "customer"]
+
     columns:
       - name: customer_id
+        description: "Identificador único del cliente en la fuente original."
         tests:
           - not_null
           - unique
+
       - name: nation_id
+        description: "Identificador de la nación asociada al cliente, enlazado con `stg_nation`."
         tests:
           - relationships:
               arguments:
                 field: nation_id
                 to: ref('stg_nation')
+
       - name: mkt_segment
+        description: "Segmento de mercado al que pertenece el cliente (Automobile, Building, etc.)."
         tests:
           - accepted_values:
               arguments:
@@ -28,21 +38,32 @@ models:
                   - Furniture
 
   - name: stg_orders
-    description: "Datos de órdenes, staging"
+    description: >
+      Tabla staging de pedidos (órdenes). Contiene información transaccional de las compras 
+      realizadas por los clientes. Se utiliza como fuente principal para construir la tabla 
+      de hechos `fct_orders`.
     config:
       tags: ["staging", "orders"]
+
     columns:
       - name: order_id
+        description: "Identificador único del pedido en la fuente."
         tests:
           - not_null
           - unique
+
       - name: customer_id
+        description: "Identificador del cliente que realizó el pedido (relación con `stg_customer`)."
         tests:
           - relationships:
               arguments:
                 field: customer_id
                 to: ref('stg_customer')
+
       - name: order_status
+        description: >
+          Estado actual del pedido.  
+          'P' = Pendiente, 'F' = Finalizado, 'O' = En curso.
         tests:
           - accepted_values:
               arguments:
@@ -50,47 +71,68 @@ models:
                   - P
                   - F
                   - O
+
       - name: order_date
+        description: "Fecha de creación del pedido."
         tests:
           - not_null
           - date_after_1992
+
       - name: total_price
+        description: "Precio total del pedido antes de descuentos e impuestos."
         tests:
           - positive_value
 
   - name: stg_lineitem
-    description: "Datos de line items, staging"
+    description: >
+      Tabla staging de líneas de pedido. Cada registro representa un artículo específico 
+      dentro de un pedido. Se usa para construir la tabla de hechos `fct_orders` y analizar 
+      métricas de ventas detalladas.
     config:
       tags: ["staging", "lineitem"]
+
     columns:
       - name: order_id
+        description: "Identificador del pedido al que pertenece la línea (relacionado con `stg_orders`)."
         tests:
           - not_null
           - relationships:
               arguments:
                 field: order_id
                 to: ref('stg_orders')
+
       - name: part_id
+        description: "Identificador del producto o pieza asociada a la línea (relacionado con `stg_part`)."
         tests:
           - not_null
           - relationships:
               arguments:
                 field: part_id
                 to: ref('stg_part')
+
       - name: supplier_id
+        description: "Identificador del proveedor que suministra la pieza (relacionado con `stg_supplier`)."
         tests:
           - not_null
           - relationships:
               arguments:
                 field: supplier_id
                 to: ref('stg_supplier')
+
       - name: line_number
+        description: "Número secuencial que identifica la posición de la línea dentro del pedido."
         tests:
           - not_null
+
       - name: quantity
+        description: "Cantidad pedida de la pieza o producto."
         tests:
           - positive_value
+
       - name: return_flag
+        description: >
+          Indicador de devolución del pedido.  
+          'R' = Devuelto, 'N' = No devuelto, 'A' = En análisis.
         tests:
           - accepted_values:
               arguments:
@@ -98,59 +140,91 @@ models:
                   - R
                   - N
                   - A
+
       - name: line_status
+        description: >
+          Estado de la línea de pedido.  
+          'F' = Finalizado, 'O' = Abierto.
         tests:
           - accepted_values:
               arguments:
                 values:
                   - F
                   - O
+
       - name: extended_price
+        description: "Precio total extendido de la línea (cantidad × precio unitario)."
         tests:
           - positive_value
+
       - name: discount
+        description: "Descuento aplicado a la línea de pedido (en porcentaje o valor decimal)."
         tests:
           - positive_value
+
       - name: tax
+        description: "Impuesto aplicado a la línea de pedido."
         tests:
           - positive_value
+
       - name: ship_date
+        description: "Fecha en la que el pedido fue enviado."
         tests:
           - date_after_1992
+
       - name: commit_date
+        description: "Fecha prometida de entrega al cliente."
         tests:
           - date_after_1992
+
       - name: receipt_date
+        description: "Fecha en la que el cliente recibió el pedido."
         tests:
           - date_after_1992
 
   - name: stg_part
-    description: "Datos de partes, staging"
+    description: >
+      Tabla staging de productos o piezas. Contiene información sobre el catálogo 
+      de productos, incluyendo tamaño, tipo y precio minorista.
     config:
       tags: ["staging", "part"]
+
     columns:
       - name: part_id
+        description: "Identificador único de la pieza o producto."
         tests:
           - not_null
           - unique
+
       - name: size
+        description: "Tamaño o dimensión de la pieza."
         tests:
           - positive_value
+
       - name: retail_price
+        description: "Precio minorista de la pieza según la fuente original."
         tests:
           - positive_value
 
   - name: stg_supplier
-    description: "Datos de proveedores, staging"
+    description: >
+      Tabla staging de proveedores. Contiene información sobre los proveedores 
+      que suministran las piezas, incluyendo su nombre e identificación de nación.
     config:
       tags: ["staging", "supplier"]
+
     columns:
       - name: supplier_id
+        description: "Identificador único del proveedor en la fuente original."
         tests:
           - not_null
           - unique
+
       - name: name
+        description: "Nombre completo del proveedor."
+
       - name: nation_id
+        description: "Identificador de la nación a la que pertenece el proveedor (relacionado con `stg_nation`)."
         tests:
           - relationships:
               arguments:
@@ -158,41 +232,58 @@ models:
                 to: ref('stg_nation')
 
   - name: stg_partsupp
-    description: "Datos de partsupp, staging"
+    description: >
+      Tabla staging que relaciona piezas y proveedores (`part-supplier`).
+      Incluye información de disponibilidad y costes de suministro.
+      Sirve de base para la tabla de hechos `fct_partsupp`.
     config:
       tags: ["staging", "partsupp"]
+
     columns:
       - name: part_id
+        description: "Identificador de la pieza asociada (relacionado con `stg_part`)."
         tests:
           - not_null
           - relationships:
               arguments:
                 field: part_id
                 to: ref('stg_part')
+
       - name: supplier_id
+        description: "Identificador del proveedor (relacionado con `stg_supplier`)."
         tests:
           - not_null
           - relationships:
               arguments:
                 field: supplier_id
                 to: ref('stg_supplier')
+
       - name: availability
+        description: "Cantidad disponible de la pieza en el inventario del proveedor."
         tests:
           - positive_value
+
       - name: supply_cost
+        description: "Coste de suministro de la pieza ofrecida por el proveedor."
         tests:
           - positive_value
 
   - name: stg_nation
-    description: "Datos de naciones, staging"
+    description: >
+      Tabla staging de naciones. Representa los países asociados a clientes y proveedores, 
+      junto con la relación con su región correspondiente.
     config:
       tags: ["staging", "nation"]
+
     columns:
       - name: nation_id
+        description: "Identificador único de la nación."
         tests:
           - not_null
           - unique
+
       - name: region_id
+        description: "Identificador de la región a la que pertenece la nación (relacionado con `stg_region`)."
         tests:
           - not_null
           - relationships:
@@ -201,11 +292,15 @@ models:
                 to: ref('stg_region')
 
   - name: stg_region
-    description: "Datos de regiones, staging"
+    description: >
+      Tabla staging de regiones. Contiene la jerarquía geográfica superior de las naciones, 
+      utilizada para la dimensión de localización geográfica.
     config:
       tags: ["staging", "region"]
+
     columns:
       - name: region_id
+        description: "Identificador único de la región."
         tests:
           - not_null
           - unique
