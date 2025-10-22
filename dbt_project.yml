@@ -1,7 +1,7 @@
-name: 'final_project'
+name: 'project_dbt'
 version: '1.0'
 config-version: 2
-profile: 'sergiodelgadosdg'
+profile: LUCASABAL
 
 model-paths: ["models"]
 analysis-paths: ["analyses"]
@@ -14,17 +14,22 @@ clean-targets:
   - "dbt_packages"
 
 models:
-  final_project:
+  project_dbt:
     staging:
       +schema: PL_STAGING
       +materialized: table
+      +tags: ["staging"]
 
-    intermediate:
-      +schema: PL_TRANSFORMATION
-      +materialized: view
+    marts:
+      intermediate:
+        +schema: PL_INTERMEDIATE
+        +materialized: view
+        +tags: ["intermediate", "marts"]
 
-    business:
-      +schema: PL_BUSINESS
-      +materialized: view
+      business:
+        +schema: PL_BUSINESS
+        +materialized: table
+        +tags: ["business", "marts"]
+
 flags:
   require_generic_test_arguments_property: true

@@ -1,3 +1,8 @@
+{{ config(
+    materialized='table',
+    tags=['business']
+) }}
+
 with dates as (
 
     select dateadd(day, seq4(), '1992-01-01') as full_date

@@ -1,0 +1,95 @@
+version: 2
+
+models:
+  - name: fct_orders
+    description: "Tabla de hechos que combina pedidos y líneas de pedido con sus dimensiones"
+    config:
+      tags: ["business", "f_orders"]
+    columns:
+      - name: orders_sk
+        description: "Clave sustituta de la tabla de hechos"
+        tests:
+          - unique
+          - not_null
+
+      - name: customer_sk
+        description: "Clave sustituta del cliente"
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_sk
+
+      - name: supplier_sk
+        description: "Clave sustituta del proveedor"
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_supplier')
+                field: supplier_sk
+
+      - name: part_sk
+        description: "Clave sustituta de la pieza"
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_part')
+                field: part_sk
+
+  - name: dim_date
+    config:
+      tags: ["business", "date"]
+    columns:
+      - name: date_id
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_location
+    columns:
+      - name: nation_sk
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_part
+    columns:
+      - name: part_sk
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_supplier
+    columns:
+      - name: supplier_sk
+        tests:
+          - unique
+          - not_null
+
+  - name: fct_partsupp
+    description: "Tabla de hechos que relaciona partes y proveedores con sus costes y disponibilidad"
+    columns:
+      - name: partsupp_sk
+        description: "Clave sustituta de la tabla de hechos"
+        tests:
+          - unique
+          - not_null
+
+      - name: part_sk
+        description: "Clave sustituta de la dimensión de partes"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_part')
+              field: part_sk
+
+      - name: supplier_sk
+        description: "Clave sustituta de la dimensión de proveedores"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_supplier')
+              field: supplier_sk
