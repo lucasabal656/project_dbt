@@ -1,16 +1,53 @@
 version: 2
 
 sources:
-  - name: tpch_sf1               
+  - name: tpch_sf1
+    description: >
+      Fuente de datos del esquema `SNOWFLAKE_SAMPLE_DATA.TPCH_SF1`, 
+      que contiene las tablas base del modelo TPC-H a escala SF1.  
+      Estas tablas sirven como entrada para la construcción de modelos analíticos 
+      en las capas *staging*, *intermediate* y *business*.
     database: SNOWFLAKE_SAMPLE_DATA
-    schema: TPCH_SF1             
+    schema: TPCH_SF1
+
     tables:
       - name: customer
+        description: >
+          Contiene información sobre los clientes, incluyendo su identificación, 
+          nombre, dirección, segmento de mercado y referencias geográficas.
+
       - name: lineitem
+        description: >
+          Contiene las líneas de pedido detalladas, con información sobre productos, 
+          proveedores, cantidades, precios, descuentos, impuestos y fechas logísticas.
+
       - name: nation
+        description: >
+          Define las naciones disponibles en el conjunto de datos y su relación con las regiones, 
+          formando parte de la jerarquía geográfica de localización.
+
       - name: orders
+        description: >
+          Contiene la información de los pedidos realizados por los clientes, 
+          incluyendo estado, fechas, prioridad, empleado responsable y valor total.
+
       - name: part
+        description: >
+          Contiene la información de catálogo de las piezas o productos, 
+          incluyendo nombre, tipo, tamaño y fabricante.
+
       - name: partsupp
+        description: >
+          Define la relación entre piezas y proveedores, 
+          incluyendo los costes de suministro y la disponibilidad de inventario.
+
       - name: region
+        description: >
+          Contiene las regiones geográficas que agrupan a las naciones, 
+          utilizadas para el análisis por ubicación o área económica.
+
       - name: supplier
+        description: >
+          Contiene información sobre los proveedores, incluyendo su identificación, 
+          nombre, localización y balance financiero.
 
