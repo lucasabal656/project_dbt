@@ -3,11 +3,10 @@ version: 2
 models:
 
   - name: int_orders
-    description: >
-      Modelo intermedio que combina información de pedidos, líneas de pedido, clientes y piezas-proveedor.
+    description: "Modelo intermedio que combina información de pedidos, líneas de pedido, clientes y piezas-proveedor.
       Integra las tablas `stg_orders`, `stg_lineitem`, `stg_customer` y `stg_partsupp`
       para proporcionar una vista completa de cada transacción con datos de coste, cantidad,
-      descuentos y fechas logísticas.
+      descuentos y fechas logísticas."
     config:
       tags: ["intermediate", "business", "orders"]
     columns:
@@ -137,10 +136,9 @@ models:
           - positive_value
 
   - name: int_location
-    description: >
-      Modelo intermedio que combina las tablas `stg_nation` y `stg_region`
+    description: "Modelo intermedio que combina las tablas `stg_nation` y `stg_region`
       para generar una dimensión de localización con información de nación y región.
-      Se utiliza posteriormente como base de la dimensión `dim_location`.
+      Se utiliza posteriormente como base de la dimensión `dim_location`."
     config:
       tags: ["intermediate", "business", "location"]
     columns:

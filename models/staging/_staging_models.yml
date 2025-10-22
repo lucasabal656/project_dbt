@@ -3,10 +3,9 @@ version: 2
 models:
 
   - name: stg_customer
-    description: >
-      Tabla staging de clientes. Contiene los datos limpios y transformados de la fuente bruta
+    description: "Tabla staging de clientes. Contiene los datos limpios y transformados de la fuente bruta
       de clientes, que luego alimentan la dimensión `dim_customer`. Incluye identificadores,
-      segmentación de mercado y vínculo geográfico con la tabla de naciones.
+      segmentación de mercado y vínculo geográfico con la tabla de naciones."
     config:
       tags: ["staging", "customer"]
 
@@ -38,10 +37,9 @@ models:
                   - Furniture
 
   - name: stg_orders
-    description: >
-      Tabla staging de pedidos (órdenes). Contiene información transaccional de las compras 
+    description: "Tabla staging de pedidos (órdenes). Contiene información transaccional de las compras 
       realizadas por los clientes. Se utiliza como fuente principal para construir la tabla 
-      de hechos `fct_orders`.
+      de hechos `fct_orders`."
     config:
       tags: ["staging", "orders"]
 
@@ -61,9 +59,8 @@ models:
                 to: ref('stg_customer')
 
       - name: order_status
-        description: >
-          Estado actual del pedido.  
-          'P' = Pendiente, 'F' = Finalizado, 'O' = En curso.
+        description: "Estado actual del pedido.  
+          'P' = Pendiente, 'F' = Finalizado, 'O' = En curso."
         tests:
           - accepted_values:
               arguments:
@@ -84,10 +81,9 @@ models:
           - positive_value
 
   - name: stg_lineitem
-    description: >
-      Tabla staging de líneas de pedido. Cada registro representa un artículo específico 
+    description: "Tabla staging de líneas de pedido. Cada registro representa un artículo específico 
       dentro de un pedido. Se usa para construir la tabla de hechos `fct_orders` y analizar 
-      métricas de ventas detalladas.
+      métricas de ventas detalladas."
     config:
       tags: ["staging", "lineitem"]
 
@@ -130,9 +126,8 @@ models:
           - positive_value
 
       - name: return_flag
-        description: >
-          Indicador de devolución del pedido.  
-          'R' = Devuelto, 'N' = No devuelto, 'A' = En análisis.
+        description: "Indicador de devolución del pedido.  
+          'R' = Devuelto, 'N' = No devuelto, 'A' = En análisis."
         tests:
           - accepted_values:
               arguments:
@@ -142,9 +137,8 @@ models:
                   - A
 
       - name: line_status
-        description: >
-          Estado de la línea de pedido.  
-          'F' = Finalizado, 'O' = Abierto.
+        description: "Estado de la línea de pedido.  
+          'F' = Finalizado, 'O' = Abierto."
         tests:
           - accepted_values:
               arguments:
@@ -183,9 +177,8 @@ models:
           - date_after_1992
 
   - name: stg_part
-    description: >
-      Tabla staging de productos o piezas. Contiene información sobre el catálogo 
-      de productos, incluyendo tamaño, tipo y precio minorista.
+    description: "Tabla staging de productos o piezas. Contiene información sobre el catálogo 
+      de productos, incluyendo tamaño, tipo y precio minorista."
     config:
       tags: ["staging", "part"]
 
@@ -207,9 +200,8 @@ models:
           - positive_value
 
   - name: stg_supplier
-    description: >
-      Tabla staging de proveedores. Contiene información sobre los proveedores 
-      que suministran las piezas, incluyendo su nombre e identificación de nación.
+    description: "Tabla staging de proveedores. Contiene información sobre los proveedores 
+      que suministran las piezas, incluyendo su nombre e identificación de nación."
     config:
       tags: ["staging", "supplier"]
 
@@ -232,10 +224,9 @@ models:
                 to: ref('stg_nation')
 
   - name: stg_partsupp
-    description: >
-      Tabla staging que relaciona piezas y proveedores (`part-supplier`).
+    description: "Tabla staging que relaciona piezas y proveedores (`part-supplier`).
       Incluye información de disponibilidad y costes de suministro.
-      Sirve de base para la tabla de hechos `fct_partsupp`.
+      Sirve de base para la tabla de hechos `fct_partsupp`."
     config:
       tags: ["staging", "partsupp"]
 
@@ -269,9 +260,8 @@ models:
           - positive_value
 
   - name: stg_nation
-    description: >
-      Tabla staging de naciones. Representa los países asociados a clientes y proveedores, 
-      junto con la relación con su región correspondiente.
+    description: "Tabla staging de naciones. Representa los países asociados a clientes y proveedores, 
+      junto con la relación con su región correspondiente."
     config:
       tags: ["staging", "nation"]
 
@@ -292,9 +282,8 @@ models:
                 to: ref('stg_region')
 
   - name: stg_region
-    description: >
-      Tabla staging de regiones. Contiene la jerarquía geográfica superior de las naciones, 
-      utilizada para la dimensión de localización geográfica.
+    description: "Tabla staging de regiones. Contiene la jerarquía geográfica superior de las naciones, 
+      utilizada para la dimensión de localización geográfica."
     config:
       tags: ["staging", "region"]
 
