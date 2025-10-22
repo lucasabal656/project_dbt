@@ -196,7 +196,7 @@ models:
       - name: supplier_name
         description: "Nombre del proveedor."
 
-      - name: nation_sk
+      - name: nation_id
         description: "Clave de la localización asociada al proveedor."
         tests:
           - relationships:
