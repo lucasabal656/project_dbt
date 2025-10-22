@@ -2,7 +2,7 @@ version: 2
 
 models:
 
-  - name: int_orders_joined
+  - name: int_orders
     description: >
       Modelo intermedio que combina información de pedidos, líneas de pedido, clientes y piezas-proveedor.
       Integra las tablas `stg_orders`, `stg_lineitem`, `stg_customer` y `stg_partsupp`
