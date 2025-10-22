@@ -23,7 +23,7 @@ orders_enriched as (
         {{ dbt_utils.generate_surrogate_key(['nation_id']) }} as nation_sk,
         {{ dbt_utils.generate_surrogate_key(['part_id']) }} as part_sk,
         {{ dbt_utils.generate_surrogate_key(['supplier_id']) }} as supplier_sk,
-        {{ dbt_utils.generate_surrogate_key(['order_id', 'line_number', 'supplier_id']) }} as orders_sk,
+        {{ dbt_utils.generate_surrogate_key(['order_id', 'line_number', 'part_id']) }} as orders_sk,
         {{ calc_final_price('extended_price', 'discount', 'tax') }} as final_price,
         (supply_cost * quantity) as total_cost,
         {{ calc_final_price('extended_price', 'discount', 'tax') }} - (supply_cost * quantity) as profit,
